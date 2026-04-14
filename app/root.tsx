@@ -12,6 +12,9 @@ import './app.css'
 import NotFound from './routes/not-found'
 import { i18nUI } from '@/lib/i18n'
 
+// TODO refine import placement
+import 'katex/dist/katex.css'
+
 export const links: Route.LinksFunction = () => []
 
 export function Layout({ children }: { children: React.ReactNode }) {

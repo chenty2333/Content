@@ -5,6 +5,8 @@ import {
   metaSchema,
 } from 'fumadocs-mdx/config'
 import { z } from 'zod'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 
 export const docs = defineDocs({
   dir: 'content',
@@ -26,5 +28,7 @@ export const docs = defineDocs({
 export default defineConfig({
   mdxOptions: {
     providerImportSource: '@/components/mdx',
+    remarkPlugins: [remarkMath],
+    rehypePlugins: (v) => [rehypeKatex, ...v],
   },
 })
