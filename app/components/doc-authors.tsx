@@ -68,7 +68,7 @@ function AuthorChip({ username }: { username: string }) {
       className={buttonVariants({
         color: 'secondary',
         size: 'sm',
-        className: 'animate-author-chip-in overflow-hidden',
+        className: 'overflow-hidden',
       })}
     >
       {showAvatar ? (

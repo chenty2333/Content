@@ -2,6 +2,7 @@ import {
   defineConfig,
   defineDocs,
   frontmatterSchema,
+  metaSchema,
 } from 'fumadocs-mdx/config'
 import { z } from 'zod'
 
@@ -14,6 +15,11 @@ export const docs = defineDocs({
     postprocess: {
       includeProcessedMarkdown: true,
     },
+  },
+  meta: {
+    schema: metaSchema.safeExtend({
+      color: z.string().optional(),
+    }),
   },
 })
 

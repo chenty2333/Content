@@ -10,7 +10,7 @@ import browserCollections from 'collections/browser'
 import { baseOptions } from '@/lib/layout.shared'
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
 import { useMDXComponents } from '@/components/mdx'
-import { getDocsSection, getSectionColor } from '@/lib/navigation'
+import { getNodeColor, getPageColor } from '@/lib/navigation'
 import { DocAuthors } from '@/components/doc-authors'
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -25,6 +25,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   return {
     path: page.path,
+    url: page.url,
     markdownUrl: getPageMarkdownUrl(page).url,
     pageTree: await source.serializePageTree(source.getPageTree()),
   }
@@ -58,20 +59,25 @@ const clientLoader = browserCollections.docs.createClientLoader({
 })
 
 export default function Page({ loaderData }: Route.ComponentProps) {
-  const { path, pageTree, markdownUrl } = useFumadocsLoader(loaderData)
-  const section = getDocsSection(path)
+  const { path, pageTree, url, markdownUrl } = useFumadocsLoader(loaderData)
+  const pageColor = getPageColor(pageTree, url)
 
   return (
-    <div className={section}>
+    <div
+      style={
+        pageColor
+          ? ({
+              '--color-fd-primary': pageColor,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
       <DocsLayout
         {...baseOptions()}
         tree={pageTree}
         tabs={{
-          transform(option) {
-            const optionSection = getDocsSection(
-              option.url.replace(/^\/docs\/?/, ''),
-            )
-            const color = getSectionColor(optionSection)
+          transform(option, node) {
+            const color = getNodeColor(node) ?? 'var(--color-fd-foreground)'
 
             return {
               ...option,
