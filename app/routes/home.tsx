@@ -35,13 +35,13 @@ export default function Home() {
         <div className="flex flex-wrap gap-3">
           <Link
             className="inline-flex items-center rounded-md border border-fd-border px-4 py-2 text-sm font-medium text-fd-foreground transition-colors hover:bg-fd-accent"
-            to="/docs"
+            to="/docs/os-2026-spring"
           >
             Browse Docs
           </Link>
           <Link
             className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-fd-muted-foreground transition-colors hover:text-fd-foreground"
-            to="/docs/workflow"
+            to="/docs/os-2026-spring/workflow"
           >
             Read the Workflow
           </Link>

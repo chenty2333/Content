@@ -1,0 +1,7 @@
+{
+  "title": "OS 2026 Spring",
+  "description": "Course notes and lab documents for the Spring 2026 semester.",
+  "icon": "BookOpen",
+  "root": true,
+  "pages": ["index", "workflow"]
+}

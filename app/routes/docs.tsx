@@ -10,6 +10,7 @@ import browserCollections from 'collections/browser'
 import { baseOptions } from '@/lib/layout.shared'
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
 import { useMDXComponents } from '@/components/mdx'
+import { getDocsSection, getSectionColor } from '@/lib/navigation'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const slugs = params['*'].split('/').filter((v) => v.length > 0)
@@ -49,10 +50,40 @@ const clientLoader = browserCollections.docs.createClientLoader({
 
 export default function Page({ loaderData }: Route.ComponentProps) {
   const { path, pageTree, markdownUrl } = useFumadocsLoader(loaderData)
+  const section = getDocsSection(path)
 
   return (
-    <DocsLayout {...baseOptions()} tree={pageTree}>
-      {clientLoader.useContent(path, { markdownUrl })}
-    </DocsLayout>
+    <div className={section}>
+      <DocsLayout
+        {...baseOptions()}
+        tree={pageTree}
+        tabs={{
+          transform(option) {
+            const optionSection = getDocsSection(
+              option.url.replace(/^\/docs\/?/, ''),
+            )
+            const color = getSectionColor(optionSection)
+
+            return {
+              ...option,
+              icon: option.icon ? (
+                <div
+                  className="[&_svg]:size-full rounded-lg size-full text-(--tab-color) max-md:bg-(--tab-color)/10 max-md:border max-md:p-1.5"
+                  style={
+                    {
+                      '--tab-color': color,
+                    } as React.CSSProperties
+                  }
+                >
+                  {option.icon}
+                </div>
+              ) : undefined,
+            }
+          },
+        }}
+      >
+        {clientLoader.useContent(path, { markdownUrl })}
+      </DocsLayout>
+    </div>
   )
 }
