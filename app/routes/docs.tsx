@@ -14,7 +14,12 @@ import { getDocsSection, getSectionColor } from '@/lib/navigation'
 import { DocAuthors } from '@/components/doc-authors'
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const slugs = params['*'].split('/').filter((v) => v.length > 0)
+  let slugs: string[] = []
+
+  const splat = params['*']
+  if (splat && typeof splat === 'string') {
+    slugs = splat.split('/').filter(Boolean)
+  }
   const page = source.getPage(slugs)
   if (!page) throw new Response('Not found', { status: 404 })
 

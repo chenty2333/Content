@@ -1,4 +1,4 @@
-export const appName = 'HZNU OS Lab'
-export const docsRoute = '/docs'
-export const docsContentRoute = '/docs-content'
-export const githubUrl = 'https://github.com'
+export const siteName = 'HZNU OS Lab'
+export const docsRoute = '/'
+export const docsContentRoute = '/'
+export const githubUrl = 'https://github.com/HZNUOperatingSystem'
