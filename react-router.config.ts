@@ -23,6 +23,6 @@ export default {
       paths.push(getUrl(slugs))
     }
 
-    return paths
+    return paths.filter((p) => p !== '/*?' && !p.endsWith('?'))
   },
 } satisfies Config
