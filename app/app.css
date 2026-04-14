@@ -54,3 +54,12 @@
     transparent
   );
 }
+
+.prose :where([data-accordion-value]) {
+  color: var(--tw-prose-body);
+  font-weight: 500;
+}
+
+.prose :where([data-accordion-value] > button:first-of-type) {
+  color: inherit;
+}
