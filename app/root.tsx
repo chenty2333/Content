@@ -10,12 +10,13 @@ import { RootProvider } from 'fumadocs-ui/provider/react-router'
 import type { Route } from './+types/root'
 import './app.css'
 import NotFound from './routes/not-found'
+import { i18nUI } from '@/lib/i18n'
 
 export const links: Route.LinksFunction = () => []
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +24,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider i18n={i18nUI.provider('zh-CN')}>{children}</RootProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -36,13 +37,13 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!'
-  let details = 'An unexpected error occurred.'
+  let message = '出错了'
+  let details = '发生了未预期的错误。'
   let stack: string | undefined
 
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) return <NotFound />
-    message = 'Error'
+    message = '错误'
     details = error.statusText
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message

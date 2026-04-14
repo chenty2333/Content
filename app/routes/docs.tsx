@@ -38,7 +38,9 @@ const clientLoader = browserCollections.docs.createClientLoader({
           {frontmatter.description}
         </p>
         <div className="flex flex-row items-center gap-2 border-b border-fd-border pb-4">
-          <MarkdownCopyButton markdownUrl={markdownUrl} />
+          <MarkdownCopyButton markdownUrl={markdownUrl}>
+            复制 Markdown
+          </MarkdownCopyButton>
         </div>
         <DocsBody>
           <Mdx components={useMDXComponents()} />

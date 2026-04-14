@@ -9,7 +9,7 @@ export function meta({}: Route.MetaArgs) {
     { title: appName },
     {
       name: 'description',
-      content: 'Course notes and lab documentation for HZNU operating systems experiments.',
+      content: '杭州师范大学操作系统实验课程文档与课程资料。',
     },
   ]
 }
@@ -20,16 +20,15 @@ export default function Home() {
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-16">
         <div className="space-y-3">
           <p className="text-sm font-medium uppercase tracking-[0.18em] text-fd-muted-foreground">
-            Documentation
+            课程文档
           </p>
           <h1 className="text-3xl font-semibold text-fd-foreground sm:text-4xl">
             {appName}
           </h1>
           <p className="max-w-2xl text-base leading-7 text-fd-muted-foreground">
-            A clean documentation site for course notes, experiment guides, and
-            lab handouts. The starter-only export endpoints and extra demo
-            controls have been removed so the project stays focused on the
-            content itself.
+            一个简洁的课程文档站点，用于承载课程笔记、实验指南和实验讲义。
+            我们已经移除了模板里多余的演示功能与导出入口，让项目更专注于
+            内容本身。
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -37,13 +36,13 @@ export default function Home() {
             className="inline-flex items-center rounded-md border border-fd-border px-4 py-2 text-sm font-medium text-fd-foreground transition-colors hover:bg-fd-accent"
             to="/docs/os-2026-spring"
           >
-            Browse Docs
+            浏览文档
           </Link>
           <Link
             className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-fd-muted-foreground transition-colors hover:text-fd-foreground"
             to="/docs/os-2026-spring/workflow"
           >
-            Read the Workflow
+            查看维护流程
           </Link>
         </div>
       </main>
