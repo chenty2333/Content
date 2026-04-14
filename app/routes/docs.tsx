@@ -2,11 +2,10 @@ import type { Route } from './+types/docs'
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import {
   DocsBody,
-  DocsDescription,
   DocsPage,
-  DocsTitle,
+  MarkdownCopyButton,
 } from 'fumadocs-ui/layouts/docs/page'
-import { source } from '@/lib/source'
+import { getPageMarkdownUrl, source } from '@/lib/source'
 import browserCollections from 'collections/browser'
 import { baseOptions } from '@/lib/layout.shared'
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
@@ -19,18 +18,27 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   return {
     path: page.path,
+    markdownUrl: getPageMarkdownUrl(page).url,
     pageTree: await source.serializePageTree(source.getPageTree()),
   }
 }
 
 const clientLoader = browserCollections.docs.createClientLoader({
-  component({ toc, frontmatter, default: Mdx }) {
+  component(
+    { toc, frontmatter, default: Mdx },
+    { markdownUrl }: { markdownUrl: string },
+  ) {
     return (
-      <DocsPage toc={toc}>
+      <DocsPage toc={toc} tableOfContent={{ style: 'clerk' }}>
         <title>{frontmatter.title}</title>
         <meta name="description" content={frontmatter.description} />
-        <DocsTitle>{frontmatter.title}</DocsTitle>
-        <DocsDescription>{frontmatter.description}</DocsDescription>
+        <h1 className="text-[1.75em] font-semibold">{frontmatter.title}</h1>
+        <p className="text-lg text-fd-muted-foreground mb-2">
+          {frontmatter.description}
+        </p>
+        <div className="mb-6 flex flex-row items-center gap-2 border-b border-fd-border pb-4">
+          <MarkdownCopyButton markdownUrl={markdownUrl} />
+        </div>
         <DocsBody>
           <Mdx components={useMDXComponents()} />
         </DocsBody>
@@ -40,11 +48,11 @@ const clientLoader = browserCollections.docs.createClientLoader({
 })
 
 export default function Page({ loaderData }: Route.ComponentProps) {
-  const { path, pageTree } = useFumadocsLoader(loaderData)
+  const { path, pageTree, markdownUrl } = useFumadocsLoader(loaderData)
 
   return (
     <DocsLayout {...baseOptions()} tree={pageTree}>
-      {clientLoader.useContent(path)}
+      {clientLoader.useContent(path, { markdownUrl })}
     </DocsLayout>
   )
 }
