@@ -27,3 +27,19 @@ html > body[data-scroll-locked] {
 .dark {
   --os-2026-spring-color: hsl(142, 60%, 68%);
 }
+
+@keyframes author-chip-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-author-chip-in {
+  animation: author-chip-in 180ms ease-out both;
+}

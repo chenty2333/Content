@@ -11,6 +11,7 @@ import { baseOptions } from '@/lib/layout.shared'
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
 import { useMDXComponents } from '@/components/mdx'
 import { getDocsSection, getSectionColor } from '@/lib/navigation'
+import { DocAuthors } from '@/components/doc-authors'
 
 export async function loader({ params }: Route.LoaderArgs) {
   const slugs = params['*'].split('/').filter((v) => v.length > 0)
@@ -37,10 +38,11 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <p className="text-lg text-fd-muted-foreground mb-2">
           {frontmatter.description}
         </p>
-        <div className="flex flex-row items-center gap-2 border-b border-fd-border pb-4">
+        <div className="flex flex-row flex-wrap items-center gap-2 border-b border-fd-border pb-4">
           <MarkdownCopyButton markdownUrl={markdownUrl}>
             复制 Markdown
           </MarkdownCopyButton>
+          <DocAuthors authors={frontmatter.author} />
         </div>
         <DocsBody>
           <Mdx components={useMDXComponents()} />
