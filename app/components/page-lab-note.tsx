@@ -14,50 +14,48 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 
-type LabTodoEntry = {
+type LabNoteEntry = {
   id: string
   order: number
-  title?: ReactNode
   children: ReactNode
 }
 
-type LabTodoContextValue = {
-  entries: LabTodoEntry[]
+type LabNoteContextValue = {
+  entries: LabNoteEntry[]
   open: boolean
   setOpen: (value: boolean) => void
-  upsertEntry: (entry: LabTodoEntry) => void
+  upsertEntry: (entry: LabNoteEntry) => void
   removeEntry: (id: string) => void
 }
 
-type LabTodoProviderProps = {
+type LabNoteProviderProps = {
   pageKey: string
   children: ReactNode
 }
 
-type LabTodoProps = {
-  title?: ReactNode
+type LabNoteProps = {
   children: ReactNode
 }
 
-const LabTodoContext = createContext<LabTodoContextValue | null>(null)
+const LabNoteContext = createContext<LabNoteContextValue | null>(null)
 
-let nextLabTodoOrder = 0
+let nextLabNoteOrder = 0
 
 function cn(...values: Array<string | undefined | false>) {
   return values.filter(Boolean).join(' ')
 }
 
-function useLabTodoContext() {
-  const value = useContext(LabTodoContext)
+function useLabNoteContext() {
+  const value = useContext(LabNoteContext)
   if (!value) {
-    throw new Error('LabTodo components must be used inside LabTodoProvider.')
+    throw new Error('LabNote components must be used inside LabNoteProvider.')
   }
 
   return value
 }
 
-function LabTodoModal() {
-  const { entries, open, setOpen } = useLabTodoContext()
+function LabNoteModal() {
+  const { entries, open, setOpen } = useLabNoteContext()
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -96,25 +94,25 @@ function LabTodoModal() {
   return createPortal(
     <div
       className={cn(
-        'lab-todo-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/30 p-3 backdrop-blur-[2px] sm:items-center sm:p-4',
-        visible ? 'lab-todo-overlay-open' : 'lab-todo-overlay-closed',
+        'lab-note-overlay fixed inset-0 z-50 flex items-end justify-center bg-black/30 p-3 backdrop-blur-[2px] sm:items-center sm:p-4',
+        visible ? 'lab-note-overlay-open' : 'lab-note-overlay-closed',
       )}
       onClick={close}
     >
       <div
         className={cn(
-          'lab-todo-panel flex w-full max-w-3xl flex-col overflow-hidden border border-fd-border bg-fd-background shadow-2xl',
-          'max-h-[min(82vh,52rem)] rounded-t-[1.4rem] sm:rounded-2xl',
-          visible ? 'lab-todo-panel-open' : 'lab-todo-panel-closed',
+          'lab-note-panel flex w-full max-w-3xl flex-col overflow-hidden border border-fd-border bg-fd-background shadow-2xl',
+          'min-h-[22rem] max-h-[min(84vh,48rem)] rounded-t-xl sm:min-h-[24rem] sm:rounded-xl',
+          visible ? 'lab-note-panel-open' : 'lab-note-panel-closed',
         )}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-fd-border sm:hidden" />
-        <div className="flex items-center justify-between border-b border-fd-border px-4 py-4 sm:px-5">
+        <div className="mx-auto mt-2 h-1 w-10 rounded-full bg-fd-border sm:hidden" />
+        <div className="flex items-center justify-between border-b border-fd-border px-3 py-3 sm:px-4 sm:py-3">
           <div>
-            <p className="text-sm text-fd-muted-foreground">本页实验任务</p>
-            <h2 className="text-base font-semibold text-fd-foreground sm:text-lg">
-              Lab Todo · {entries.length} 项
+            <p className="text-xs text-fd-muted-foreground">本页实验注记</p>
+            <h2 className="text-sm font-semibold text-fd-foreground sm:text-base">
+              Lab Note · {entries.length} 项
             </h2>
           </div>
           <button
@@ -129,26 +127,15 @@ function LabTodoModal() {
           </button>
         </div>
 
-        <div className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
-          <div className="space-y-3 sm:space-y-4">
-            {entries.map((entry, index) => (
-              <section
+        <div className="overflow-y-auto px-3 py-3 sm:px-4 sm:py-4">
+          <div className="space-y-4 sm:space-y-5">
+            {entries.map((entry) => (
+              <div
                 key={entry.id}
-                className="rounded-xl border border-fd-border bg-fd-card p-3 sm:p-4"
+                className="prose prose-no-margin max-w-none text-sm leading-6"
               >
-                {entry.title ? (
-                  <h3 className="mb-2 text-sm font-medium text-fd-foreground">
-                    {entry.title}
-                  </h3>
-                ) : (
-                  <p className="mb-2 text-sm font-medium text-fd-muted-foreground">
-                    Lab Todo {index + 1}
-                  </p>
-                )}
-                <div className="prose prose-no-margin max-w-none text-sm leading-7">
-                  {entry.children}
-                </div>
-              </section>
+                {entry.children}
+              </div>
             ))}
           </div>
         </div>
@@ -158,8 +145,8 @@ function LabTodoModal() {
   )
 }
 
-export function CollectProvider({ pageKey, children }: LabTodoProviderProps) {
-  const [entries, setEntries] = useState<LabTodoEntry[]>([])
+export function LabNoteProvider({ pageKey, children }: LabNoteProviderProps) {
+  const [entries, setEntries] = useState<LabNoteEntry[]>([])
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -167,7 +154,7 @@ export function CollectProvider({ pageKey, children }: LabTodoProviderProps) {
     setOpen(false)
   }, [pageKey])
 
-  const value = useMemo<LabTodoContextValue>(
+  const value = useMemo<LabNoteContextValue>(
     () => ({
       entries,
       open,
@@ -187,15 +174,15 @@ export function CollectProvider({ pageKey, children }: LabTodoProviderProps) {
   )
 
   return (
-    <LabTodoContext.Provider value={value}>
+    <LabNoteContext.Provider value={value}>
       {children}
-      <LabTodoModal />
-    </LabTodoContext.Provider>
+      <LabNoteModal />
+    </LabNoteContext.Provider>
   )
 }
 
-export function CollectFloatingButton() {
-  const { entries, setOpen } = useLabTodoContext()
+export function LabNoteFloatingButton() {
+  const { entries, setOpen } = useLabNoteContext()
   if (entries.length === 0) return null
 
   return (
@@ -209,8 +196,8 @@ export function CollectFloatingButton() {
         })}
         onClick={() => setOpen(true)}
       >
-        <span>Lab Todo</span>
-        <span className="text-xs text-fd-muted-foreground">
+        <span>Lab Note</span>
+        <span className="pl-1.5 text-xs text-fd-muted-foreground">
           {entries.length}
         </span>
       </button>
@@ -218,43 +205,35 @@ export function CollectFloatingButton() {
   )
 }
 
-export function LabTodo({ title, children }: LabTodoProps) {
-  const { upsertEntry, removeEntry } = useLabTodoContext()
+export function LabNote({ children }: LabNoteProps) {
+  const { upsertEntry, removeEntry } = useLabNoteContext()
   const id = useId()
-  const orderRef = useRef(nextLabTodoOrder++)
+  const orderRef = useRef(nextLabNoteOrder++)
 
   useEffect(() => {
     upsertEntry({
       id,
       order: orderRef.current,
-      title,
       children,
     })
 
     return () => {
       removeEntry(id)
     }
-  }, [children, id, removeEntry, title, upsertEntry])
+  }, [children, id, removeEntry, upsertEntry])
 
   return (
-    <section className="not-prose my-4 rounded-xl border border-fd-border bg-fd-card shadow-sm">
-      <div className="flex items-center gap-2 border-b border-fd-border px-4 py-2.5">
+    <section
+      className="lab-note-inline not-prose my-4 w-full rounded-xl border bg-fd-card shadow-sm"
+    >
+      <div className="flex items-center border-b border-fd-border px-4 py-2.5">
         <span className="text-xs font-semibold uppercase tracking-[0.16em] text-fd-muted-foreground">
-          Lab Todo
+          Lab Note
         </span>
-        {title ? (
-          <span className="truncate text-sm font-medium text-fd-foreground">
-            {title}
-          </span>
-        ) : null}
       </div>
-      <div className="prose prose-no-margin max-w-none px-4 py-3 text-sm leading-7 text-fd-card-foreground">
+      <div className="prose prose-no-margin max-w-none px-4 py-3 text-[var(--tw-prose-body)] text-sm leading-7">
         {children}
       </div>
     </section>
   )
-}
-
-export function Collect(props: LabTodoProps) {
-  return <LabTodo {...props} />
 }

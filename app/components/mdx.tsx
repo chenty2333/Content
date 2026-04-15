@@ -9,7 +9,7 @@ import {
 import * as TabsComponents from 'fumadocs-ui/components/tabs'
 import type { MDXComponents } from 'mdx/types'
 import type { ComponentProps, ReactNode } from 'react'
-import { Collect, LabTodo } from './page-collect'
+import { LabNote } from './page-lab-note'
 import { Spoiler } from './spoiler'
 
 type CalloutProps = {
@@ -54,8 +54,7 @@ export function getMDXComponents(components?: MDXComponents) {
     CalloutContainer,
     CalloutTitle,
     CalloutDescription,
-    LabTodo,
-    Collect,
+    LabNote,
     Spoiler,
     ...TabsComponents,
     ...components,

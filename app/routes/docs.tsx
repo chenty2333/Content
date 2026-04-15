@@ -13,9 +13,9 @@ import { useMDXComponents } from '@/components/mdx'
 import { getNodeColor, getPageColor } from '@/lib/navigation'
 import { DocAuthors } from '@/components/doc-authors'
 import {
-  CollectFloatingButton,
-  CollectProvider,
-} from '@/components/page-collect'
+  LabNoteFloatingButton,
+  LabNoteProvider,
+} from '@/components/page-lab-note'
 import type { ColorScheme } from '@/lib/source'
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -77,7 +77,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
   const pageColor = getPageColor(pageTree, url)
 
   return (
-    <CollectProvider pageKey={path}>
+    <LabNoteProvider pageKey={path}>
       <div
         className={pageColor ? 'docs-theme-color' : undefined}
         style={getThemeColorStyle(pageColor, '--docs-page-color')}
@@ -111,8 +111,8 @@ export default function Page({ loaderData }: Route.ComponentProps) {
         >
           {clientLoader.useContent(path, { markdownUrl })}
         </DocsLayout>
-        <CollectFloatingButton />
+        <LabNoteFloatingButton />
       </div>
-    </CollectProvider>
+    </LabNoteProvider>
   )
 }
