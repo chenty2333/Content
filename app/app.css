@@ -12,6 +12,22 @@
   --color-fd-muted-foreground: hsl(0 0% 66%);
 }
 
+.docs-theme-color {
+  --color-fd-primary: var(--docs-page-color-light);
+}
+
+.dark .docs-theme-color {
+  --color-fd-primary: var(--docs-page-color-dark, var(--docs-page-color-light));
+}
+
+.docs-tab-color {
+  --tab-color: var(--tab-color-light);
+}
+
+.dark .docs-tab-color {
+  --tab-color: var(--tab-color-dark, var(--tab-color-light));
+}
+
 .prose {
   --tw-prose-body: color-mix(
     in oklab,

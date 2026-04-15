@@ -1,6 +1,7 @@
 import { findPath, type Folder, type Root } from 'fumadocs-core/page-tree'
+import type { ColorScheme } from './source'
 
-type ColoredNode = (Folder | Root) & { color?: string }
+type ColoredNode = (Folder | Root) & { color?: ColorScheme }
 
 export function getNodeColor(node: Folder | Root | undefined) {
   return (node as ColoredNode | undefined)?.color

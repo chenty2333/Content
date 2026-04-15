@@ -12,6 +12,7 @@ import { useFumadocsLoader } from 'fumadocs-core/source/client'
 import { useMDXComponents } from '@/components/mdx'
 import { getNodeColor, getPageColor } from '@/lib/navigation'
 import { DocAuthors } from '@/components/doc-authors'
+import type { ColorScheme } from '@/lib/source'
 
 export async function loader({ params }: Route.LoaderArgs) {
   let slugs: string[] = []
@@ -58,33 +59,43 @@ const clientLoader = browserCollections.docs.createClientLoader({
   },
 })
 
+function getThemeColorStyle(color: ColorScheme | undefined, name: string) {
+  if (!color) return undefined
+
+  return {
+    [`${name}-light`]: color.light,
+    [`${name}-dark`]: color.dark,
+  } as React.CSSProperties
+}
+
 export default function Page({ loaderData }: Route.ComponentProps) {
   const { path, pageTree, url, markdownUrl } = useFumadocsLoader(loaderData)
   const pageColor = getPageColor(pageTree, url)
 
   return (
     <div
-      style={
-        pageColor
-          ? ({
-              '--color-fd-primary': pageColor,
-            } as React.CSSProperties)
-          : undefined
-      }
+      className={pageColor ? 'docs-theme-color' : undefined}
+      style={getThemeColorStyle(pageColor, '--docs-page-color')}
     >
       <DocsLayout
         {...baseOptions}
         tree={pageTree}
         tabs={{
           transform(option, node) {
-            const color = getNodeColor(node) ?? 'var(--color-fd-foreground)'
+            const color = getNodeColor(node)
 
             return {
               ...option,
               icon: option.icon ? (
                 <div
-                  className="[&_svg]:size-full rounded-lg size-full text-(--tab-color) max-md:bg-(--tab-color)/10 max-md:border max-md:p-1.5"
-                  style={{ '--tab-color': color } as React.CSSProperties}
+                  className="docs-tab-color [&_svg]:size-full rounded-lg size-full text-(--tab-color) max-md:bg-(--tab-color)/10 max-md:border max-md:p-1.5"
+                  style={
+                    getThemeColorStyle(color, '--tab-color') ??
+                    ({
+                      '--tab-color-light': 'var(--color-fd-foreground)',
+                      '--tab-color-dark': 'var(--color-fd-foreground)',
+                    } as React.CSSProperties)
+                  }
                 >
                   {option.icon}
                 </div>

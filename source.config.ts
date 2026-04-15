@@ -20,7 +20,7 @@ export const docs = defineDocs({
   },
   meta: {
     schema: metaSchema.safeExtend({
-      color: z.string().optional(),
+      color: z.union([z.string(), z.array(z.string())]).optional(),
     }),
   },
 })
