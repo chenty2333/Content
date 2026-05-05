@@ -45,7 +45,7 @@ make submit
 | Arch | `sudo pacman -S riscv64-elf-gcc qemu-system-riscv` |
 | macOS | `brew install riscv64-elf-gcc qemu` |
 
-## 尝试一下最先进的工具吧！
+## 尝试一下最先进的工具吧！（这一步是可选，并不是实验内容的一部分！）
 
 试试在 Claude Code 中使用 DeepSeek API，十块钱的额度就能用很久！
 
@@ -61,6 +61,8 @@ make submit
 
 ```bash
 # 安装
+# 先设置国内镜像避免遇到网络问题（推荐全局设置，后面所有 npm 都快）
+npm config set registry https://registry.npmmirror.com/
 npm install -g @anthropic-ai/claude-code
 
 # 配置（直接执行 / 持久化配置需写入 ~/.bashrc）
