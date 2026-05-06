@@ -7,14 +7,21 @@ description: 实现基于虚拟时间的步长票据调度算法
 
 <LabNote>
 
-本章需要编辑这些位置：
+本章按下面三组任务推进：
 
+**1. 调度器状态**
 - [ ] `kernel/proc.h`：在 `struct proc` 中加入 `tickets`、`stride`、`pass`。
 - [ ] `kernel/proc.c`：在 `freeproc()` 中清零新字段。
+
+**2. stride 选择逻辑**
 - [ ] `kernel/sched/stride.c`：补全 `sched_init_proc()`、`stride_for_tickets()`、`sched_set_tickets()`、`sched_scan_best()`、`sched_commit()`。
-- [ ] `kernel/syscall.h` + `kernel/syscall.c` + `kernel/sysproc.c` + `user/usys.pl` + `user/user.h`：注册 `getpinfo` 系统调用；`settickets` 的系统调用路径已经接好，只需要实现内核里的 `sched_set_tickets()`。
-- [ ] `kernel/proc.h` + `user/user.h`：定义布局一致的 `struct pstat`；`kernel/proc.c` + `kernel/defs.h`：实现 `getpinfo()`。
-- [ ] `user/stridetest.c`：补全忙循环、结果收集、`getpinfo` 状态检查和 `1:2:4` 比例检查。
+
+**3. 用户态可观测性**
+- [ ] `kernel/proc.c`：实现 `getpinfo()`，把 `proc[]` 中的调度状态拷贝到用户传入的 `struct pstat` 数组。
+- [ ] `user/stridetest.c`：复用 ch1 的进程创建结构，补全忙循环、结果收集、`getpinfo` 状态检查和 `1:2:4` 比例检查。
+- [ ] `user/schedtrace.c`：这是已经提供好的观察工具，不需要补代码；完成 `getpinfo()` 后用它观察调度时间序列。
+
+`settickets` 和 `getpinfo` 的系统调用注册路径已经接好；你需要实现的是内核里的 `sched_set_tickets()` 和 `getpinfo()` 行为。
 
 全部实验完成后，在仓库根目录执行 `make submit` 获得提交包。
 
@@ -52,7 +59,7 @@ stridetest
 以 `getpinfo(ps)` 为例，从用户程序到内核逻辑一共 4 步：
 
 1. **用户态**：`user/user.h` 定义 `struct pstat`，声明 `int getpinfo(struct pstat*)`，用户程序把数组地址传给它。
-2. **陷入内核**：每个系统调用都需要一段完全重复的汇编——把调用号写进 `a7` 寄存器，执行 `ecall`，然后 `ret` 返回。手写几十份太麻烦了，所以 xv6 用了一个 perl 脚本 `user/usys.pl` 来自动生成这些 stub 代码。你只需要在里面加一行 `entry("getpinfo")`，`make` 时它就会帮你生成：
+2. **陷入内核**：每个系统调用都需要一段完全重复的汇编——把调用号写进 `a7` 寄存器，执行 `ecall`，然后 `ret` 返回。手写几十份太麻烦了，所以 xv6 用了一个 perl 脚本 `user/usys.pl` 来自动生成这些 stub 代码。本实验已经写好 `entry("getpinfo")`，`make` 时它会生成：
 
     ```asm
     .globl getpinfo
@@ -75,7 +82,7 @@ stridetest
 | `user/usys.pl` | 加 `entry("xxx")`，自动生成汇编 stub |
 | `user/user.h` | 声明用户态函数签名 |
 
-本章中，`settickets` 的系统调用路径已经接好；你需要在 `getpinfo` 上完整走一遍这个流程。
+本章中，`settickets` 和 `getpinfo` 的注册样板都已经接好。你需要读懂这条路径，然后在 `kernel/proc.c` 里真正实现 `getpinfo()` 的状态采集和 `copyout()`。
 
 ---
 
@@ -326,6 +333,37 @@ stridetest: PASS
 ```text
 loops[0] < loops[1] < loops[2]
 ```
+
+`stridetest` 是最终正确性检查，不是第二个用户态并发编程练习。`pipe -> fork -> read -> wait` 的基本结构已经在 ch1 练过；这里的重点是 tickets 设置、`getpinfo` 返回内容和 stride 的比例趋势。
+
+## 7. schedtrace 看什么？
+
+`schedtrace` 不是判题程序，它不会输出 PASS/FAIL。它会每隔一段时间调用 `getpinfo()`，只打印几个测试进程的调度状态：
+
+- `tickets`
+- `stride`
+- `pass`
+- `sched_count`
+- 本轮 `sched_count` 增量
+
+推荐在单核 stride 下观察：
+
+```bash
+make clean && make qemu SCHED=STRIDE CPUS=1
+schedtrace
+```
+
+输出形态类似：
+
+```text
+tick 128
+pid tickets state  count delta stride pass
+4   1       runble  10    +2   1000000 9010000
+5   2       runble  19    +6   500000 9010000
+6   4       runble  37    +12  250000 9010000
+```
+
+你应该能看到：tickets 越大的进程，`sched_count` 增长越快；同时因为 stride 更小，它每次被调度后 `pass` 增长得更慢。这个程序只用于观察趋势，不要求每一轮 delta 都严格等于 `1:2:4`。
 
 ## 常见错误
 

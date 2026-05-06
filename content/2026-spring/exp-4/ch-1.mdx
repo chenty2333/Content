@@ -33,6 +33,12 @@ make clean && make qemu SCHED=RR CPUS=1
 schedtest
 ```
 
+<Callout title="先从 schedtest 开始" type="info">
+
+`schedtest` 是本实验中唯一需要你完整补全用户态 `pipe -> fork -> read -> wait` 结构的地方。后面的 `stridetest` 会复用这个模式，重点转向 tickets、`getpinfo` 和比例检查。
+
+</Callout>
+
 <Callout title="正确现象" type="info">
 
 `schedtest` 会创建 3 个 CPU-bound 子进程。RR 正确时，三个子进程都会输出结果，`elapsed` 接近 80 ticks，`loops` 都应该明显大于 0。
@@ -52,7 +58,7 @@ schedtest
 
 ### xv6 是什么
 
-xv6 是 MIT 为教学重新实现的 Unix v6，约 8000 行 C + 汇编，运行在 RISC-V 64 位架构上。`make qemu` 启动后你会进入一个简易 shell，可以运行 `schedtest`、`stridetest` 等用户程序。
+xv6 是 MIT 为教学重新实现的 Unix v6，约 8000 行 C + 汇编，运行在 RISC-V 64 位架构上。`make qemu` 启动后你会进入一个简易 shell，可以运行 `schedtest`、`stridetest`、`schedtrace` 等用户程序。
 
 ### 代码结构
 
@@ -75,6 +81,7 @@ kernel/
 user/
 ├── schedtest.c       RR 测试程序                         ← ch1
 ├── stridetest.c      Stride 测试程序                     ← ch2
+├── schedtrace.c      Stride 时间序列观察工具              ← ch2
 ├── usys.pl           系统调用 stub 生成脚本              ← ch2
 ├── user.h            用户态系统调用声明                   ← ch2
 └── ...
@@ -270,6 +277,8 @@ return 0;
 ## 5. schedtest 测什么？
 
 `schedtest` 会创建多个只做忙循环的子进程。忙循环不会主动读文件、睡眠或等待输入，所以它们主要依赖时钟中断触发 `yield()`，再由 RR 调度器轮流运行。
+
+这个程序的目的不是检查 stride，也不是读取内核调度状态；它只是帮你确认最基本的“多个 CPU-bound 子进程能被轮流调度并完成”。
 
 你要补全两部分：
 
